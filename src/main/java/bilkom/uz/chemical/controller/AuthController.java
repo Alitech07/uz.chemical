@@ -25,11 +25,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+        System.out.println("shu yerga keldi");
+        System.out.println(request.getUsername());
         try {
             // 1. Autentifikatsiya
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getLogin(),
+                            request.getUsername(),
                             request.getPassword()
                     )
             );

@@ -20,7 +20,7 @@ public class User {
     private Long id;
 
     private String username;
-    private String login;
+    private String fullname;
     private String password;
     private boolean isActive = true;
 
