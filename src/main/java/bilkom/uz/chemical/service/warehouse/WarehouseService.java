@@ -4,9 +4,9 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.warehouse.WarehouseDto;
 import bilkom.uz.chemical.entity.warehouse.Warehouse;
 import bilkom.uz.chemical.entity.warehouse.WarehouseState;
-import bilkom.uz.chemical.repository.UserRepository;
 import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.repository.warehouse.WarehouseRepository;
+import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     public Result getAll() {
         return new Result("OK", true, warehouseRepository.findAll());
@@ -46,10 +46,7 @@ public class WarehouseService {
             warehouse.setMeasure(dto.getMeasure());
             warehouse.setStorageSpace(dto.getStorageSpace());
             warehouse.setState(dto.getState() != null ? dto.getState() : WarehouseState.ACTIVE);
-            if (dto.getCreatedById() != null) {
-                userRepository.findById(dto.getCreatedById())
-                        .ifPresent(warehouse::setCreatedBy);
-            }
+            securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
             warehouseRepository.save(warehouse);
             return new Result("Ombor yozuvi qo'shildi", true);
         }).orElse(new Result("Mahsulot topilmadi", false));

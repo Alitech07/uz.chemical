@@ -18,5 +18,4 @@ public class PurchaseDto {
     private BigDecimal amount;
     private PurchaseStatus status;
     private PurchaseState state;
-    private Long createdById;
 }

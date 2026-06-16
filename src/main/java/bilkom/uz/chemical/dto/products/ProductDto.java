@@ -16,5 +16,4 @@ public class ProductDto {
     private String manufacturerName;
     private Double amount;
     private ProductState state;
-    private Long createdById;
 }

@@ -4,8 +4,8 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.products.ProductDto;
 import bilkom.uz.chemical.entity.products.Product;
 import bilkom.uz.chemical.entity.products.ProductState;
-import bilkom.uz.chemical.repository.UserRepository;
 import bilkom.uz.chemical.repository.products.ProductRepository;
+import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     public Result getAll() {
         return new Result("OK", true, productRepository.findAll());
@@ -37,30 +37,15 @@ public class ProductService {
 
     public Result add(ProductDto dto) {
         Product product = new Product();
-        product.setProductName(dto.getProductName());
-        product.setComposition(dto.getComposition());
-        product.setMeasure(dto.getMeasure());
-        product.setCountryManufacture(dto.getCountryManufacture());
-        product.setManufacturerName(dto.getManufacturerName());
-        product.setAmount(dto.getAmount());
-        product.setState(dto.getState() != null ? dto.getState() : ProductState.ACTIVE);
-        if (dto.getCreatedById() != null) {
-            userRepository.findById(dto.getCreatedById())
-                    .ifPresent(product::setCreatedBy);
-        }
+        mapDtoToEntity(dto, product);
+        securityUtils.getCurrentUser().ifPresent(product::setCreatedBy);
         productRepository.save(product);
         return new Result("Mahsulot qo'shildi", true);
     }
 
     public Result edit(Long id, ProductDto dto) {
         return productRepository.findById(id).map(product -> {
-            product.setProductName(dto.getProductName());
-            product.setComposition(dto.getComposition());
-            product.setMeasure(dto.getMeasure());
-            product.setCountryManufacture(dto.getCountryManufacture());
-            product.setManufacturerName(dto.getManufacturerName());
-            product.setAmount(dto.getAmount());
-            if (dto.getState() != null) product.setState(dto.getState());
+            mapDtoToEntity(dto, product);
             productRepository.save(product);
             return new Result("Mahsulot tahrirlandi", true);
         }).orElse(new Result("Mahsulot topilmadi", false));
@@ -72,5 +57,15 @@ public class ProductService {
         }
         productRepository.deleteById(id);
         return new Result("Mahsulot o'chirildi", true);
+    }
+
+    private void mapDtoToEntity(ProductDto dto, Product product) {
+        product.setProductName(dto.getProductName());
+        product.setComposition(dto.getComposition());
+        product.setMeasure(dto.getMeasure());
+        product.setCountryManufacture(dto.getCountryManufacture());
+        product.setManufacturerName(dto.getManufacturerName());
+        product.setAmount(dto.getAmount());
+        if (dto.getState() != null) product.setState(dto.getState());
     }
 }

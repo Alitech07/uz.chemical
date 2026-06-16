@@ -14,5 +14,4 @@ public class WarehouseDto {
     private String measure;
     private String storageSpace;
     private WarehouseState state;
-    private Long createdById;
 }

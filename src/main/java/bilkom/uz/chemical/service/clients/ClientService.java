@@ -6,6 +6,7 @@ import bilkom.uz.chemical.entity.clients.Client;
 import bilkom.uz.chemical.entity.clients.ClientState;
 import bilkom.uz.chemical.repository.UserRepository;
 import bilkom.uz.chemical.repository.clients.ClientRepository;
+import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     public Result getAll() {
         return new Result("OK", true, clientRepository.findAll());
@@ -52,6 +54,7 @@ public class ClientService {
     public Result add(ClientDto dto) {
         Client client = new Client();
         mapDtoToEntity(dto, client);
+        securityUtils.getCurrentUser().ifPresent(client::setCreatedBy);
         clientRepository.save(client);
         return new Result("Mijoz qo'shildi", true);
     }
@@ -83,10 +86,6 @@ public class ClientService {
         if (dto.getEmpId() != null) {
             userRepository.findById(dto.getEmpId())
                     .ifPresent(client::setEmployee);
-        }
-        if (dto.getCreatedById() != null) {
-            userRepository.findById(dto.getCreatedById())
-                    .ifPresent(client::setCreatedBy);
         }
     }
 }

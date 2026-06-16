@@ -17,5 +17,4 @@ public class ClientDto {
     private String region;
     private ClientState state;
     private Long empId;
-    private Long createdById;
 }

@@ -4,9 +4,9 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.purchases.PurchaseDto;
 import bilkom.uz.chemical.entity.purchases.Purchase;
 import bilkom.uz.chemical.entity.purchases.PurchaseStatus;
-import bilkom.uz.chemical.repository.UserRepository;
 import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
 import bilkom.uz.chemical.repository.suppliers.SupplierRepository;
+import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final SupplierRepository supplierRepository;
-    private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     public Result getAll() {
         return new Result("OK", true, purchaseRepository.findAll());
@@ -45,10 +45,7 @@ public class PurchaseService {
             purchase.setAmount(dto.getAmount());
             purchase.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
             purchase.setState(dto.getState());
-            if (dto.getCreatedById() != null) {
-                userRepository.findById(dto.getCreatedById())
-                        .ifPresent(purchase::setCreatedBy);
-            }
+            securityUtils.getCurrentUser().ifPresent(purchase::setCreatedBy);
             purchaseRepository.save(purchase);
             return new Result("Xarid qo'shildi", true);
         }).orElse(new Result("Yetkazib beruvchi topilmadi", false));
