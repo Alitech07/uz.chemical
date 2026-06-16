@@ -40,6 +40,9 @@ public class ProductService {
         product.setProductName(dto.getProductName());
         product.setComposition(dto.getComposition());
         product.setMeasure(dto.getMeasure());
+        product.setCountryManufacture(dto.getCountryManufacture());
+        product.setManufacturerName(dto.getManufacturerName());
+        product.setAmount(dto.getAmount());
         product.setState(dto.getState() != null ? dto.getState() : ProductState.ACTIVE);
         if (dto.getCreatedById() != null) {
             userRepository.findById(dto.getCreatedById())
@@ -54,6 +57,9 @@ public class ProductService {
             product.setProductName(dto.getProductName());
             product.setComposition(dto.getComposition());
             product.setMeasure(dto.getMeasure());
+            product.setCountryManufacture(dto.getCountryManufacture());
+            product.setManufacturerName(dto.getManufacturerName());
+            product.setAmount(dto.getAmount());
             if (dto.getState() != null) product.setState(dto.getState());
             productRepository.save(product);
             return new Result("Mahsulot tahrirlandi", true);

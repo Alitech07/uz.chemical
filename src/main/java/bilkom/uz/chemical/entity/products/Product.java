@@ -30,6 +30,14 @@ public class Product {
     @Column(nullable = false)
     private String measure;
 
+    @Column(name = "country_manufacture")
+    private String countryManufacture;
+
+    @Column(name = "manufacturer_name")
+    private String manufacturerName;
+
+    private Double amount;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductState state = ProductState.ACTIVE;

@@ -12,6 +12,9 @@ public class ProductDto {
     private String productName;
     private String composition;
     private String measure;
+    private String countryManufacture;
+    private String manufacturerName;
+    private Double amount;
     private ProductState state;
     private Long createdById;
 }
