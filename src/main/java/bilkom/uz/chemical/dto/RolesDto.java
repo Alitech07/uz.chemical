@@ -9,11 +9,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class RolesDto {
     private Long id;
-    private String fullName;
-    private String login;
-    private String password;
-    private boolean isActive;
-    private Set<Long> roleIds;
+    private String name;
+    private String description;
+    private Set<Long> permissionIds;
 }

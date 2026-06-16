@@ -3,32 +3,75 @@ package bilkom.uz.chemical.service;
 import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.UserDto;
 import bilkom.uz.chemical.entity.User;
+import bilkom.uz.chemical.entity.admin.Roles;
 import bilkom.uz.chemical.repository.UserRepository;
+import bilkom.uz.chemical.repository.admin.RolesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RolesRepository rolesRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Result addUser(UserDto userDto) {
+    public Result getAll() {
+        return new Result("OK", true, userRepository.findAll());
+    }
+
+    public Result getById(Long id) {
+        return userRepository.findById(id)
+                .map(user -> new Result("OK", true, user))
+                .orElse(new Result("Foydalanuvchi topilmadi", false));
+    }
+
+    public Result addUser(UserDto dto) {
         User user = new User();
-        user.setUsername(userDto.getFullName());
-        user.setLogin(userDto.getLogin());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setActive(userDto.isActive());
+        user.setFullname(dto.getFullName());
+        user.setLogin(dto.getLogin());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setActive(dto.isActive());
+        user.setRoles(resolveRoles(dto.getRoleIds()));
         userRepository.save(user);
-        return new Result("Foydalanuvchi muvaffaqiyatli qo'shildi", true);
+        return new Result("Foydalanuvchi qo'shildi", true);
+    }
+
+    public Result editUser(Long id, UserDto dto) {
+        return userRepository.findById(id).map(user -> {
+            user.setFullname(dto.getFullName());
+            user.setLogin(dto.getLogin());
+            user.setActive(dto.isActive());
+            if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(dto.getPassword()));
+            }
+            user.setRoles(resolveRoles(dto.getRoleIds()));
+            userRepository.save(user);
+            return new Result("Foydalanuvchi tahrirlandi", true);
+        }).orElse(new Result("Foydalanuvchi topilmadi", false));
+    }
+
+    public Result deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            return new Result("Foydalanuvchi topilmadi", false);
+        }
+        userRepository.deleteById(id);
+        return new Result("Foydalanuvchi o'chirildi", true);
     }
 
     public Result getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return new Result("OK", true, users);
+        return getAll();
+    }
+
+    private Set<Roles> resolveRoles(Set<Long> roleIds) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(rolesRepository.findAllById(roleIds));
     }
 }

@@ -15,22 +15,27 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/list")
-    public ResponseEntity<Result> getUserList() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<Result> getAll() {
+        return ResponseEntity.ok(userService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Result> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Result> addUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.addUser(userDto));
+    public ResponseEntity<Result> add(@RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.addUser(dto));
     }
 
-    @PutMapping("/edit")
-    public ResponseEntity<?> editUser() {
-        return ResponseEntity.ok().body("Xodim muvafaqiyatli tahrirlandi.");
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Result> edit(@PathVariable Long id, @RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.editUser(id, dto));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser() {
-        return ResponseEntity.ok().body("Xodim muvafaqiyatli o'chirildi.");
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Result> delete(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.deleteUser(id));
     }
 }
