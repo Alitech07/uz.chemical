@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByLogin(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Foydalanuvchi topilmadi: " + username)
                 );
@@ -51,7 +51,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         });
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
+                .withUsername(user.getLogin())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .accountLocked(!user.isActive())

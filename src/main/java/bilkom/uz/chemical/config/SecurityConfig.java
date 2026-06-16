@@ -46,6 +46,7 @@ public class SecurityConfig {
                 // 4. Endpointlarga ruxsat
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/user/*").permitAll()
                         .anyRequest().authenticated()
                 )
 
@@ -88,6 +89,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -101,5 +103,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 
 }
