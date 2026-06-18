@@ -46,7 +46,6 @@ public class SecurityConfig {
                 // 4. Endpointlarga ruxsat
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/user/*").permitAll()
                         .anyRequest().authenticated()
                 )
 

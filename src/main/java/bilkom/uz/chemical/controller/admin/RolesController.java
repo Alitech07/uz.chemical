@@ -19,6 +19,11 @@ public class RolesController {
         return ResponseEntity.ok(rolesService.getAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Result> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(rolesService.getById(id));
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Result> add(@RequestBody RolesDto dto) {
         return ResponseEntity.ok(rolesService.add(dto));

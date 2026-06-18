@@ -23,6 +23,12 @@ public class RolesService {
         return new Result("OK", true, rolesRepository.findAll());
     }
 
+    public Result getById(Long id) {
+        return rolesRepository.findById(id)
+                .map(role -> new Result("OK", true, role))
+                .orElse(new Result("Rol topilmadi", false));
+    }
+
     public Result add(RolesDto dto) {
         if (rolesRepository.existsByName(dto.getName())) {
             return new Result("Bu nomdagi rol allaqachon mavjud", false);

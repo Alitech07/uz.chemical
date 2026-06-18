@@ -19,10 +19,6 @@ public class PermissionController {
         return ResponseEntity.ok(permissionService.getAll());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Result> add(@RequestBody PermissionDto dto) {
-        return ResponseEntity.ok(permissionService.add(dto));
-    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Result> delete(@PathVariable Long id) {

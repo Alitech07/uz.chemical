@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,12 +27,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
         System.out.println("shu yerga keldi");
-        System.out.println(request.getUsername());
+        System.out.println(request.getLogin());
         try {
             // 1. Autentifikatsiya
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
+                            request.getLogin(),
                             request.getPassword()
                     )
             );
@@ -50,7 +51,10 @@ public class AuthController {
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401)
-                    .body(Map.of("message", "Username yoki parol noto'g'ri!"));
+                    .body(Map.of("message", "Login yoki parol noto'g'ri!"));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 

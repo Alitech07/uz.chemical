@@ -28,34 +28,32 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("request"+request.toString());
-        // 1. Token olish
         String token = extractToken(request);
 
-        System.out.println(token);
-        // 2. Token tekshirish
         if (token != null && jwtUtils.isValid(token)) {
+            try {
+                String username = jwtUtils.getUsername(token);
 
-            String username = jwtUtils.getUsername(token);
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
 
-            // 3. UserDetails yuklash
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
 
-            // 4. SecurityContext ga o'rnatish
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
 
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);

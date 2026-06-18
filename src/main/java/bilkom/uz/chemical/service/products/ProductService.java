@@ -65,7 +65,6 @@ public class ProductService {
         product.setMeasure(dto.getMeasure());
         product.setCountryManufacture(dto.getCountryManufacture());
         product.setManufacturerName(dto.getManufacturerName());
-        product.setAmount(dto.getAmount());
         if (dto.getState() != null) product.setState(dto.getState());
     }
 }

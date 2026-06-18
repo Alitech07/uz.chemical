@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         new UsernameNotFoundException("Foydalanuvchi topilmadi: " + username)
                 );
 
-        System.out.println("userdetailser "+username+" "+user.getUsername());
+        System.out.println("userdetailser "+username+" "+user.getLogin());
 
         // Barcha rollar va permissionlarni yig'ish
         Set<GrantedAuthority> authorities = new HashSet<>();

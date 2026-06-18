@@ -17,5 +17,11 @@ public class Permission {
     private Long id;
 
     @Column(unique = true,nullable = false)
-    private String name;
+    private String code;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private String module;
 }

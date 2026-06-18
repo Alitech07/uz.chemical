@@ -25,7 +25,10 @@ public class SupplierService {
 
     public Result add(SupplierDto dto) {
         Supplier supplier = new Supplier();
-        supplier.setName(dto.getName());
+        supplier.setFreightForwarder(dto.getFreightForwarder());
+        supplier.setLegalName(dto.getLegalName());
+        supplier.setBrandName(dto.getBrandName());
+        supplier.setTypeOfActivity(dto.getTypeOfActivity());
         supplier.setContactPerson(dto.getContactPerson());
         supplier.setPhone(dto.getPhone());
         supplier.setEmail(dto.getEmail());
@@ -37,7 +40,10 @@ public class SupplierService {
 
     public Result edit(Long id, SupplierDto dto) {
         return supplierRepository.findById(id).map(supplier -> {
-            supplier.setName(dto.getName());
+            supplier.setFreightForwarder(dto.getFreightForwarder());
+            supplier.setLegalName(dto.getLegalName());
+            supplier.setBrandName(dto.getBrandName());
+            supplier.setTypeOfActivity(dto.getTypeOfActivity());
             supplier.setContactPerson(dto.getContactPerson());
             supplier.setPhone(dto.getPhone());
             supplier.setEmail(dto.getEmail());

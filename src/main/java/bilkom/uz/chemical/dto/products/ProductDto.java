@@ -14,6 +14,5 @@ public class ProductDto {
     private String measure;
     private String countryManufacture;
     private String manufacturerName;
-    private Double amount;
     private ProductState state;
 }

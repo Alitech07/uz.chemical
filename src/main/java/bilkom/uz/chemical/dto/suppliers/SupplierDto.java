@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SupplierDto {
     private Long id;
-    private String name;
+    private String freightForwarder;
+    private String legalName;
+    private String brandName;
+    private String typeOfActivity;
     private String contactPerson;
     private String phone;
     private String email;

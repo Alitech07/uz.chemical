@@ -16,8 +16,14 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String freightForwarder;
+
     @Column(nullable = false)
-    private String name;
+    private String legalName;
+
+    private String brandName;
+
+    private String typeOfActivity;
 
     private String contactPerson;
 
@@ -29,3 +35,4 @@ public class Supplier {
 
     private boolean isActive = true;
 }
+

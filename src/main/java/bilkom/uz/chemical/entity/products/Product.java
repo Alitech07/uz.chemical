@@ -36,8 +36,6 @@ public class Product {
     @Column(name = "manufacturer_name")
     private String manufacturerName;
 
-    private Double amount;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductState state = ProductState.ACTIVE;
