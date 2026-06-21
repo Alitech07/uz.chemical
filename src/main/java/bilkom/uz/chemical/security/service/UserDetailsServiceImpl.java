@@ -54,7 +54,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .withUsername(user.getLogin())
                 .password(user.getPassword())
                 .authorities(authorities)
-                .accountLocked(!user.isActive())
+                .accountLocked(!"A".equals(user.getIsActive()))
                 .build();
     }
 }

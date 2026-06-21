@@ -30,4 +30,12 @@ public class Roles {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_modules",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "module_id")
+    )
+    private Set<SysModule> modules = new HashSet<>();
 }

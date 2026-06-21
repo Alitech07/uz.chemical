@@ -14,6 +14,6 @@ public class UserDto {
     private String fullName;
     private String login;
     private String password;
-    private boolean isActive;
+    private String isActive;
     private Set<Long> roleIds;
 }

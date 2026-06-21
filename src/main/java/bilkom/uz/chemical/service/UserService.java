@@ -36,7 +36,7 @@ public class UserService {
         user.setFullname(dto.getFullName());
         user.setLogin(dto.getLogin());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setActive(dto.isActive());
+        user.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : "A");
         user.setRoles(resolveRoles(dto.getRoleIds()));
         userRepository.save(user);
         return new Result("Foydalanuvchi qo'shildi", true);
@@ -46,7 +46,7 @@ public class UserService {
         return userRepository.findById(id).map(user -> {
             user.setFullname(dto.getFullName());
             user.setLogin(dto.getLogin());
-            user.setActive(dto.isActive());
+            if (dto.getIsActive() != null) user.setIsActive(dto.getIsActive());
             if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
                 user.setPassword(passwordEncoder.encode(dto.getPassword()));
             }

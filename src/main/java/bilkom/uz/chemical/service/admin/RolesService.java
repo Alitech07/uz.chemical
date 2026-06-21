@@ -4,8 +4,10 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.RolesDto;
 import bilkom.uz.chemical.entity.admin.Permission;
 import bilkom.uz.chemical.entity.admin.Roles;
+import bilkom.uz.chemical.entity.admin.SysModule;
 import bilkom.uz.chemical.repository.admin.PermissionRepository;
 import bilkom.uz.chemical.repository.admin.RolesRepository;
+import bilkom.uz.chemical.repository.admin.SysModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class RolesService {
 
     private final RolesRepository rolesRepository;
     private final PermissionRepository permissionRepository;
+    private final SysModuleRepository sysModuleRepository;
 
     public Result getAll() {
         return new Result("OK", true, rolesRepository.findAll());
@@ -37,6 +40,7 @@ public class RolesService {
         role.setName(dto.getName());
         role.setDescription(dto.getDescription());
         role.setPermissions(resolvePermissions(dto.getPermissionIds()));
+        role.setModules(resolveModules(dto.getModuleIds()));
         rolesRepository.save(role);
         return new Result("Rol qo'shildi", true);
     }
@@ -45,7 +49,12 @@ public class RolesService {
         return rolesRepository.findById(id).map(role -> {
             role.setName(dto.getName());
             role.setDescription(dto.getDescription());
-            role.setPermissions(resolvePermissions(dto.getPermissionIds()));
+            if (dto.getPermissionIds() != null) {
+                role.setPermissions(resolvePermissions(dto.getPermissionIds()));
+            }
+            if (dto.getModuleIds() != null) {
+                role.setModules(resolveModules(dto.getModuleIds()));
+            }
             rolesRepository.save(role);
             return new Result("Rol tahrirlandi", true);
         }).orElse(new Result("Rol topilmadi", false));
@@ -60,9 +69,12 @@ public class RolesService {
     }
 
     private Set<Permission> resolvePermissions(Set<Long> permissionIds) {
-        if (permissionIds == null || permissionIds.isEmpty()) {
-            return new HashSet<>();
-        }
+        if (permissionIds == null || permissionIds.isEmpty()) return new HashSet<>();
         return new HashSet<>(permissionRepository.findAllById(permissionIds));
+    }
+
+    private Set<SysModule> resolveModules(Set<Long> moduleIds) {
+        if (moduleIds == null || moduleIds.isEmpty()) return new HashSet<>();
+        return new HashSet<>(sysModuleRepository.findAllById(moduleIds));
     }
 }

@@ -14,4 +14,5 @@ public class RolesDto {
     private String name;
     private String description;
     private Set<Long> permissionIds;
+    private Set<Long> moduleIds;
 }
