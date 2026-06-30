@@ -35,6 +35,11 @@ public class WarehouseController {
         return ResponseEntity.ok(warehouseService.getByState(state));
     }
 
+    @GetMapping("/free-products")
+    public ResponseEntity<Result> getFreeProducts() {
+        return ResponseEntity.ok(warehouseService.getFreeProducts());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Result> add(@RequestBody WarehouseDto dto) {
         return ResponseEntity.ok(warehouseService.add(dto));

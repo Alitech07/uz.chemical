@@ -10,6 +10,9 @@ import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class WarehouseService {
@@ -71,5 +74,15 @@ public class WarehouseService {
         }
         warehouseRepository.deleteById(id);
         return new Result("Ombor yozuvi o'chirildi", true);
+    }
+
+    public Result getFreeProducts() {
+        Set<Long> trackedIds = warehouseRepository.findAll().stream()
+                .map(w -> w.getProduct().getId())
+                .collect(Collectors.toSet());
+        var freeProducts = productRepository.findAll().stream()
+                .filter(p -> !trackedIds.contains(p.getId()))
+                .collect(Collectors.toList());
+        return new Result("OK", true, freeProducts);
     }
 }
