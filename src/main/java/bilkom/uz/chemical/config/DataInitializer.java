@@ -22,7 +22,7 @@ public class DataInitializer implements CommandLineRunner {
                 admin.setLogin("admin");
                 admin.setFullname("Admin User");
                 admin.setPassword(passwordEncoder.encode("Admin1234"));
-                admin.setActive(true);
+                admin.setIsActive("A");
                 userRepository.save(admin);
                 System.out.println("=== Default admin user created: login=admin, password=Admin1234 ===");
             } else {

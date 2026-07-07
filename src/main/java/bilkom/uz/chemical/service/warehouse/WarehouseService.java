@@ -5,6 +5,7 @@ import bilkom.uz.chemical.dto.warehouse.WarehouseDto;
 import bilkom.uz.chemical.entity.warehouse.Warehouse;
 import bilkom.uz.chemical.entity.warehouse.WarehouseState;
 import bilkom.uz.chemical.repository.products.ProductRepository;
+import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
 import bilkom.uz.chemical.repository.warehouse.WarehouseRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
+    private final PurchaseRepository purchaseRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -42,23 +44,41 @@ public class WarehouseService {
     }
 
     public Result add(WarehouseDto dto) {
-        return productRepository.findById(dto.getProductId()).map(product -> {
-            Warehouse warehouse = new Warehouse();
-            warehouse.setProduct(product);
-            warehouse.setResidual(dto.getResidual());
-            warehouse.setMeasure(dto.getMeasure());
-            warehouse.setStorageSpace(dto.getStorageSpace());
-            warehouse.setState(dto.getState() != null ? dto.getState() : WarehouseState.ACTIVE);
-            securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
-            warehouseRepository.save(warehouse);
-            return new Result("Ombor yozuvi qo'shildi", true);
-        }).orElse(new Result("Mahsulot topilmadi", false));
+        Warehouse warehouse = new Warehouse();
+        warehouse.setResidual(dto.getResidual());
+        warehouse.setMeasure(dto.getMeasure());
+        warehouse.setStorageSpace(dto.getStorageSpace());
+        warehouse.setState(dto.getState() != null ? dto.getState() : WarehouseState.ACTIVE);
+        securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
+
+        if (dto.getPurchaseId() != null) {
+            return purchaseRepository.findById(dto.getPurchaseId()).map(purchase -> {
+                warehouse.setPurchase(purchase);
+                warehouseRepository.save(warehouse);
+                return new Result("Ombor yozuvi qo'shildi", true);
+            }).orElse(new Result("Xarid topilmadi", false));
+        }
+
+        if (dto.getProductId() != null) {
+            return productRepository.findById(dto.getProductId()).map(product -> {
+                warehouse.setProduct(product);
+                warehouseRepository.save(warehouse);
+                return new Result("Ombor yozuvi qo'shildi", true);
+            }).orElse(new Result("Mahsulot topilmadi", false));
+        }
+
+        return new Result("Mahsulot yoki xarid ko'rsatilmagan", false);
     }
 
     public Result edit(Long id, WarehouseDto dto) {
         return warehouseRepository.findById(id).map(warehouse -> {
-            productRepository.findById(dto.getProductId())
-                    .ifPresent(warehouse::setProduct);
+            if (dto.getPurchaseId() != null) {
+                purchaseRepository.findById(dto.getPurchaseId()).ifPresent(warehouse::setPurchase);
+                warehouse.setProduct(null);
+            } else if (dto.getProductId() != null) {
+                productRepository.findById(dto.getProductId()).ifPresent(warehouse::setProduct);
+                warehouse.setPurchase(null);
+            }
             warehouse.setResidual(dto.getResidual());
             warehouse.setMeasure(dto.getMeasure());
             warehouse.setStorageSpace(dto.getStorageSpace());
@@ -78,6 +98,7 @@ public class WarehouseService {
 
     public Result getFreeProducts() {
         Set<Long> trackedIds = warehouseRepository.findAll().stream()
+                .filter(w -> w.getProduct() != null)
                 .map(w -> w.getProduct().getId())
                 .collect(Collectors.toSet());
         var freeProducts = productRepository.findAll().stream()

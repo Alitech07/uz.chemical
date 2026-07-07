@@ -33,7 +33,7 @@ public class SupplierService {
         supplier.setPhone(dto.getPhone());
         supplier.setEmail(dto.getEmail());
         supplier.setAddress(dto.getAddress());
-        supplier.setActive(dto.isActive());
+        supplier.setIsActive(dto.getIsActive());
         supplierRepository.save(supplier);
         return new Result("Yetkazib beruvchi qo'shildi", true);
     }
@@ -48,7 +48,7 @@ public class SupplierService {
             supplier.setPhone(dto.getPhone());
             supplier.setEmail(dto.getEmail());
             supplier.setAddress(dto.getAddress());
-            supplier.setActive(dto.isActive());
+            supplier.setIsActive(dto.getIsActive());
             supplierRepository.save(supplier);
             return new Result("Yetkazib beruvchi tahrirlandi", true);
         }).orElse(new Result("Yetkazib beruvchi topilmadi", false));

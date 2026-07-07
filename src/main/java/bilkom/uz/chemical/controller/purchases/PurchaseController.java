@@ -5,8 +5,15 @@ import bilkom.uz.chemical.dto.purchases.PurchaseDto;
 import bilkom.uz.chemical.entity.purchases.PurchaseStatus;
 import bilkom.uz.chemical.service.purchases.PurchaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -33,6 +40,27 @@ public class PurchaseController {
     @GetMapping("/by-status/{status}")
     public ResponseEntity<Result> getByStatus(@PathVariable PurchaseStatus status) {
         return ResponseEntity.ok(purchaseService.getByStatus(status));
+    }
+
+    @PostMapping("/upload-certificate")
+    public ResponseEntity<Result> uploadCertificate(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(purchaseService.uploadCertificate(file));
+    }
+
+    @GetMapping("/certificate/{fileName}")
+    public ResponseEntity<Resource> getCertificate(@PathVariable String fileName) {
+        try {
+            Path filePath = Path.of("uploads/certificates").resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (!resource.exists()) return ResponseEntity.notFound().build();
+            String contentType = fileName.endsWith(".pdf") ? "application/pdf" : "image/jpeg";
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/add")

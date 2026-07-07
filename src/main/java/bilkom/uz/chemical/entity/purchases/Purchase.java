@@ -27,14 +27,29 @@ public class Purchase {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
+    @Column(name = "product_name", nullable = false)
+    private String productName;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "brand")
+    private String brand;
+
+    @Column(name = "delivery_type")
+    private String deliveryType;
+
+    @Column(name = "certificate_path")
+    private String certificatePath;
+
     @Column(name = "purchase_description")
     private String purchaseDescription;
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
-
-    @Column(nullable = false, precision = 15, scale = 3)
-    private BigDecimal amount;
+//
+//    @Column(nullable = false, precision = 15, scale = 3)
+//    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -17,5 +17,5 @@ public class SupplierDto {
     private String phone;
     private String email;
     private String address;
-    private boolean isActive;
+    private String isActive;
 }

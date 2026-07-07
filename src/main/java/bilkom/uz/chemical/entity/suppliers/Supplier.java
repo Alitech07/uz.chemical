@@ -33,6 +33,6 @@ public class Supplier {
 
     private String address;
 
-    private boolean isActive = true;
+    private String isActive = "A";
 }
 

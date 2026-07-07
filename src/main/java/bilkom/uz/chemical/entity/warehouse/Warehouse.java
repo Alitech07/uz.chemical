@@ -2,6 +2,7 @@ package bilkom.uz.chemical.entity.warehouse;
 
 import bilkom.uz.chemical.entity.User;
 import bilkom.uz.chemical.entity.products.Product;
+import bilkom.uz.chemical.entity.purchases.Purchase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,12 @@ public class Warehouse {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
 
     @Column(nullable = false)
     private Double residual;

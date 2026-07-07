@@ -16,6 +16,7 @@ public class GridColumnDto {
     private String label;
     private String type;
     private boolean exportable;
+    private Boolean visible = true;
     private String width;
     private Map<String, String> badgeMap;
 }

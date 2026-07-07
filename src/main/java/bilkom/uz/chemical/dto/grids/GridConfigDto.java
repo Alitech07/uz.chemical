@@ -14,4 +14,5 @@ public class GridConfigDto {
     private boolean search;
     private boolean filter;
     private boolean checkbox;
+    private boolean showFile;
 }

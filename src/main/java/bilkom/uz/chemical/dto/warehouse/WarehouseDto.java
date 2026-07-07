@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WarehouseDto {
     private Long productId;
+    private Long purchaseId;
     private Double residual;
     private String measure;
     private String storageSpace;
