@@ -19,4 +19,7 @@ public class GridColumnDto {
     private Boolean visible = true;
     private String width;
     private Map<String, String> badgeMap;
+    private String group;
+    private String footer;
+    private String footerLabel;
 }
