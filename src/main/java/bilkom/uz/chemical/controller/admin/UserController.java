@@ -46,6 +46,13 @@ public class UserController {
         return ResponseEntity.ok(userService.deleteUser(id));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Result> getMe() {
+        return securityUtils.getCurrentUser()
+                .map(user -> ResponseEntity.ok(userService.getById(user.getId())))
+                .orElse(ResponseEntity.status(401).body(new Result("Foydalanuvchi topilmadi", false, null)));
+    }
+
     @GetMapping("/my-modules")
     public ResponseEntity<Result> getMyModules() {
         Set<String> modules = securityUtils.getCurrentUser()
