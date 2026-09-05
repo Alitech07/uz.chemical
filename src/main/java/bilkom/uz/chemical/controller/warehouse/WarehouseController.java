@@ -40,6 +40,11 @@ public class WarehouseController {
         return ResponseEntity.ok(warehouseService.getFreeProducts());
     }
 
+    @GetMapping("/available")
+    public ResponseEntity<Result> getAvailableStock() {
+        return ResponseEntity.ok(warehouseService.getAvailableStock());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Result> add(@RequestBody WarehouseDto dto) {
         return ResponseEntity.ok(warehouseService.add(dto));

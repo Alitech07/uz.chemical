@@ -96,6 +96,13 @@ public class WarehouseService {
         return new Result("Ombor yozuvi o'chirildi", true);
     }
 
+    public Result getAvailableStock() {
+        var available = warehouseRepository.findAll().stream()
+                .filter(w -> w.getResidual() != null && w.getResidual() > 0)
+                .collect(Collectors.toList());
+        return new Result("OK", true, available);
+    }
+
     public Result getFreeProducts() {
         Set<Long> trackedIds = warehouseRepository.findAll().stream()
                 .filter(w -> w.getProduct() != null)
