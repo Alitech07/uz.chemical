@@ -33,6 +33,9 @@ public class Warehouse {
     @Column(nullable = false)
     private Double residual;
 
+    @Column
+    private Double price;
+
     @Column(nullable = false)
     private String measure;
 

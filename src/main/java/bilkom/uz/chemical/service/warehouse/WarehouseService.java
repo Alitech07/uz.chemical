@@ -46,6 +46,7 @@ public class WarehouseService {
     public Result add(WarehouseDto dto) {
         Warehouse warehouse = new Warehouse();
         warehouse.setResidual(dto.getResidual());
+        warehouse.setPrice(dto.getPrice());
         warehouse.setMeasure(dto.getMeasure());
         warehouse.setStorageSpace(dto.getStorageSpace());
         warehouse.setState(dto.getState() != null ? dto.getState() : WarehouseState.ACTIVE);
@@ -80,6 +81,7 @@ public class WarehouseService {
                 warehouse.setPurchase(null);
             }
             warehouse.setResidual(dto.getResidual());
+            warehouse.setPrice(dto.getPrice());
             warehouse.setMeasure(dto.getMeasure());
             warehouse.setStorageSpace(dto.getStorageSpace());
             if (dto.getState() != null) warehouse.setState(dto.getState());

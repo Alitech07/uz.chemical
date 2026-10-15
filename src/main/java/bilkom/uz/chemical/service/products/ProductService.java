@@ -4,6 +4,7 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.products.ProductDto;
 import bilkom.uz.chemical.entity.products.Product;
 import bilkom.uz.chemical.entity.products.ProductState;
+import bilkom.uz.chemical.repository.products.CategoryRepository;
 import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -66,5 +68,10 @@ public class ProductService {
         product.setCountryManufacture(dto.getCountryManufacture());
         product.setManufacturerName(dto.getManufacturerName());
         if (dto.getState() != null) product.setState(dto.getState());
+        if (dto.getCategoryId() != null) {
+            categoryRepository.findById(dto.getCategoryId()).ifPresent(product::setCategory);
+        } else {
+            product.setCategory(null);
+        }
     }
 }

@@ -24,6 +24,10 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     @Column(columnDefinition = "TEXT")
     private String composition;
 
