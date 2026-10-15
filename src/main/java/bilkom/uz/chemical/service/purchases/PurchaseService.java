@@ -51,7 +51,8 @@ public class PurchaseService {
             purchase.setCertificatePath(dto.getCertificatePath());
             purchase.setPurchaseDescription(dto.getPurchaseDescription());
             purchase.setPrice(dto.getPrice());
-//            purchase.setAmount(dto.getAmount() != null ? dto.getAmount() : java.math.BigDecimal.ZERO);
+            purchase.setAmount(dto.getAmount());
+            purchase.setCostPrice(dto.getCostPrice());
             purchase.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
             purchase.setState(dto.getState() != null ? dto.getState() : bilkom.uz.chemical.entity.purchases.PurchaseState.ACTIVE);
             securityUtils.getCurrentUser().ifPresent(purchase::setCreatedBy);
@@ -71,7 +72,8 @@ public class PurchaseService {
             purchase.setCertificatePath(dto.getCertificatePath());
             purchase.setPurchaseDescription(dto.getPurchaseDescription());
             purchase.setPrice(dto.getPrice());
-//            if (dto.getAmount() != null) purchase.setAmount(dto.getAmount());
+            if (dto.getAmount() != null) purchase.setAmount(dto.getAmount());
+            if (dto.getCostPrice() != null) purchase.setCostPrice(dto.getCostPrice());
             if (dto.getStatus() != null) purchase.setStatus(dto.getStatus());
             if (dto.getState() != null) purchase.setState(dto.getState());
             purchaseRepository.save(purchase);

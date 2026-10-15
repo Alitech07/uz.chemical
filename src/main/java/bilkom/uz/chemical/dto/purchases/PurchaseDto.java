@@ -21,6 +21,7 @@ public class PurchaseDto {
     private String purchaseDescription;
     private BigDecimal price;
     private BigDecimal amount;
+    private BigDecimal costPrice;
     private PurchaseStatus status;
     private PurchaseState state;
 }

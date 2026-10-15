@@ -47,9 +47,12 @@ public class Purchase {
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
-//
-//    @Column(nullable = false, precision = 15, scale = 3)
-//    private BigDecimal amount;
+
+    @Column(precision = 15, scale = 3)
+    private BigDecimal amount;
+
+    @Column(name = "cost_price", precision = 15, scale = 2)
+    private BigDecimal costPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
