@@ -64,4 +64,16 @@ public class UserController {
                 .orElse(Collections.emptySet());
         return ResponseEntity.ok(new Result("OK", true, modules));
     }
+
+    @GetMapping("/my-permissions")
+    public ResponseEntity<Result> getMyPermissions() {
+        Set<String> codes = securityUtils.getCurrentUser()
+                .map(user -> user.getRoles().stream()
+                        .flatMap(role -> role.getPermissions().stream())
+                        .map(p -> p.getCode())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet()))
+                .orElse(Collections.emptySet());
+        return ResponseEntity.ok(new Result("OK", true, codes));
+    }
 }

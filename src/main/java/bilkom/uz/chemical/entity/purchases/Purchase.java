@@ -1,6 +1,7 @@
 package bilkom.uz.chemical.entity.purchases;
 
 import bilkom.uz.chemical.entity.User;
+import bilkom.uz.chemical.entity.products.Product;
 import bilkom.uz.chemical.entity.suppliers.Supplier;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,8 +28,9 @@ public class Purchase {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "country")
     private String country;
@@ -38,6 +40,9 @@ public class Purchase {
 
     @Column(name = "delivery_type")
     private String deliveryType;
+
+    @Column(name = "payment_type")
+    private String paymentType;
 
     @Column(name = "certificate_path")
     private String certificatePath;
@@ -53,6 +58,12 @@ public class Purchase {
 
     @Column(name = "cost_price", precision = 15, scale = 2)
     private BigDecimal costPrice;
+
+    @Column(name = "transport_expenses", precision = 15, scale = 2)
+    private BigDecimal transportExpenses;
+
+    @Column(name = "customs_expenses", precision = 15, scale = 2)
+    private BigDecimal customsExpenses;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

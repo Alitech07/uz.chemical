@@ -204,7 +204,8 @@ public class OrderService {
 
     private String resolveProductName(Warehouse w) {
         if (w.getProduct() != null) return w.getProduct().getProductName();
-        if (w.getPurchase() != null) return w.getPurchase().getProductName();
+        if (w.getPurchase() != null && w.getPurchase().getProduct() != null)
+            return w.getPurchase().getProduct().getProductName();
         return "Noma'lum mahsulot";
     }
 }

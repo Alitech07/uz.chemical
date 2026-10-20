@@ -4,6 +4,7 @@ import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.purchases.PurchaseDto;
 import bilkom.uz.chemical.entity.purchases.Purchase;
 import bilkom.uz.chemical.entity.purchases.PurchaseStatus;
+import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
 import bilkom.uz.chemical.repository.suppliers.SupplierRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
@@ -20,6 +21,7 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final SupplierRepository supplierRepository;
+    private final ProductRepository productRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -41,39 +43,49 @@ public class PurchaseService {
     }
 
     public Result add(PurchaseDto dto) {
-        return supplierRepository.findById(dto.getSupplierId()).map(supplier -> {
-            Purchase purchase = new Purchase();
-            purchase.setSupplier(supplier);
-            purchase.setProductName(dto.getProductName());
-            purchase.setCountry(dto.getCountry());
-            purchase.setBrand(dto.getBrand());
-            purchase.setDeliveryType(dto.getDeliveryType());
-            purchase.setCertificatePath(dto.getCertificatePath());
-            purchase.setPurchaseDescription(dto.getPurchaseDescription());
-            purchase.setPrice(dto.getPrice());
-            purchase.setAmount(dto.getAmount());
-            purchase.setCostPrice(dto.getCostPrice());
-            purchase.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
-            purchase.setState(dto.getState() != null ? dto.getState() : bilkom.uz.chemical.entity.purchases.PurchaseState.ACTIVE);
-            securityUtils.getCurrentUser().ifPresent(purchase::setCreatedBy);
-            purchaseRepository.save(purchase);
-            return new Result("Xarid qo'shildi", true);
-        }).orElse(new Result("Yetkazib beruvchi topilmadi", false));
+        var supplierOpt = supplierRepository.findById(dto.getSupplierId());
+        if (supplierOpt.isEmpty()) return new Result("Yetkazib beruvchi topilmadi", false);
+        var productOpt = productRepository.findById(dto.getProductId());
+        if (productOpt.isEmpty()) return new Result("Mahsulot topilmadi", false);
+
+        Purchase purchase = new Purchase();
+        purchase.setSupplier(supplierOpt.get());
+        purchase.setProduct(productOpt.get());
+        purchase.setCountry(dto.getCountry());
+        purchase.setBrand(dto.getBrand());
+        purchase.setDeliveryType(dto.getDeliveryType());
+        purchase.setPaymentType(dto.getPaymentType());
+        purchase.setCertificatePath(dto.getCertificatePath());
+        purchase.setPurchaseDescription(dto.getPurchaseDescription());
+        purchase.setPrice(dto.getPrice());
+        purchase.setAmount(dto.getAmount());
+        purchase.setCostPrice(dto.getCostPrice());
+        purchase.setTransportExpenses(dto.getTransportExpenses());
+        purchase.setCustomsExpenses(dto.getCustomsExpenses());
+        purchase.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
+        purchase.setState(dto.getState() != null ? dto.getState() : bilkom.uz.chemical.entity.purchases.PurchaseState.ACTIVE);
+        securityUtils.getCurrentUser().ifPresent(purchase::setCreatedBy);
+        purchaseRepository.save(purchase);
+        return new Result("Xarid qo'shildi", true);
     }
 
     public Result edit(Long id, PurchaseDto dto) {
         return purchaseRepository.findById(id).map(purchase -> {
             supplierRepository.findById(dto.getSupplierId())
                     .ifPresent(purchase::setSupplier);
-            purchase.setProductName(dto.getProductName());
+            productRepository.findById(dto.getProductId())
+                    .ifPresent(purchase::setProduct);
             purchase.setCountry(dto.getCountry());
             purchase.setBrand(dto.getBrand());
             purchase.setDeliveryType(dto.getDeliveryType());
+            purchase.setPaymentType(dto.getPaymentType());
             purchase.setCertificatePath(dto.getCertificatePath());
             purchase.setPurchaseDescription(dto.getPurchaseDescription());
             purchase.setPrice(dto.getPrice());
             if (dto.getAmount() != null) purchase.setAmount(dto.getAmount());
             if (dto.getCostPrice() != null) purchase.setCostPrice(dto.getCostPrice());
+            if (dto.getTransportExpenses() != null) purchase.setTransportExpenses(dto.getTransportExpenses());
+            if (dto.getCustomsExpenses() != null) purchase.setCustomsExpenses(dto.getCustomsExpenses());
             if (dto.getStatus() != null) purchase.setStatus(dto.getStatus());
             if (dto.getState() != null) purchase.setState(dto.getState());
             purchaseRepository.save(purchase);

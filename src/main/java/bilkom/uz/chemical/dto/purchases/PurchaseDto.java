@@ -13,15 +13,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class PurchaseDto {
     private Long supplierId;
-    private String productName;
+    private Long productId;
     private String country;
     private String brand;
     private String deliveryType;
+    private String paymentType;
     private String certificatePath;
     private String purchaseDescription;
     private BigDecimal price;
     private BigDecimal amount;
     private BigDecimal costPrice;
+    private BigDecimal transportExpenses;
+    private BigDecimal customsExpenses;
     private PurchaseStatus status;
     private PurchaseState state;
 }
