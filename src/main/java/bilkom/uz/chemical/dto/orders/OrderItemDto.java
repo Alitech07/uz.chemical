@@ -13,4 +13,5 @@ public class OrderItemDto {
     private Long warehouseId;
     private Double quantity;
     private BigDecimal price;
+    private Long currencyId;
 }

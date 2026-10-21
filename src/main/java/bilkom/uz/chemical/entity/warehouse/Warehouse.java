@@ -3,6 +3,7 @@ package bilkom.uz.chemical.entity.warehouse;
 import bilkom.uz.chemical.entity.User;
 import bilkom.uz.chemical.entity.products.Product;
 import bilkom.uz.chemical.entity.purchases.Purchase;
+import bilkom.uz.chemical.entity.settings.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,10 @@ public class Warehouse {
 
     @Column(name = "storage_space")
     private String storageSpace;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package bilkom.uz.chemical.entity.orders;
 
+import bilkom.uz.chemical.entity.settings.Currency;
 import bilkom.uz.chemical.entity.warehouse.Warehouse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,4 +36,8 @@ public class OrderItem {
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 }

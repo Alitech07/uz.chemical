@@ -11,6 +11,7 @@ import bilkom.uz.chemical.entity.orders.OrderStatus;
 import bilkom.uz.chemical.entity.warehouse.Warehouse;
 import bilkom.uz.chemical.repository.clients.ClientRepository;
 import bilkom.uz.chemical.repository.orders.OrderRepository;
+import bilkom.uz.chemical.repository.settings.CurrencyRepository;
 import bilkom.uz.chemical.repository.warehouse.WarehouseRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
     private final WarehouseRepository warehouseRepository;
+    private final CurrencyRepository currencyRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -184,6 +186,9 @@ public class OrderService {
             item.setWarehouse(w);
             item.setQuantity(itemDto.getQuantity());
             item.setPrice(itemDto.getPrice());
+            if (itemDto.getCurrencyId() != null) {
+                currencyRepository.findById(itemDto.getCurrencyId()).ifPresent(item::setCurrency);
+            }
             order.getItems().add(item);
 
             w.setResidual((w.getResidual() != null ? w.getResidual() : 0.0) - itemDto.getQuantity());

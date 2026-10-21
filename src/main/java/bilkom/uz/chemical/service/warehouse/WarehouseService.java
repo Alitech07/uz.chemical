@@ -6,6 +6,7 @@ import bilkom.uz.chemical.entity.warehouse.Warehouse;
 import bilkom.uz.chemical.entity.warehouse.WarehouseState;
 import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
+import bilkom.uz.chemical.repository.settings.CurrencyRepository;
 import bilkom.uz.chemical.repository.warehouse.WarehouseRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
+    private final CurrencyRepository currencyRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -50,6 +52,9 @@ public class WarehouseService {
         warehouse.setMeasure(dto.getMeasure());
         warehouse.setStorageSpace(dto.getStorageSpace());
         warehouse.setState(dto.getState() != null ? dto.getState() : WarehouseState.ACTIVE);
+        if (dto.getCurrencyId() != null) {
+            currencyRepository.findById(dto.getCurrencyId()).ifPresent(warehouse::setCurrency);
+        }
         securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
 
         if (dto.getPurchaseId() != null) {
@@ -84,6 +89,9 @@ public class WarehouseService {
             warehouse.setPrice(dto.getPrice());
             warehouse.setMeasure(dto.getMeasure());
             warehouse.setStorageSpace(dto.getStorageSpace());
+            if (dto.getCurrencyId() != null) {
+                currencyRepository.findById(dto.getCurrencyId()).ifPresent(warehouse::setCurrency);
+            }
             if (dto.getState() != null) warehouse.setState(dto.getState());
             warehouseRepository.save(warehouse);
             return new Result("Ombor yozuvi tahrirlandi", true);

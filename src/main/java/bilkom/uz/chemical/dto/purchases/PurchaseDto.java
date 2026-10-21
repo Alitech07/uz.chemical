@@ -16,8 +16,9 @@ public class PurchaseDto {
     private Long productId;
     private String country;
     private String brand;
-    private String deliveryType;
-    private String paymentType;
+    private Long deliveryTypeId;
+    private Long paymentTypeId;
+    private Long currencyId;
     private String certificatePath;
     private String purchaseDescription;
     private BigDecimal price;

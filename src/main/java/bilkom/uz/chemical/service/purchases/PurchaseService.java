@@ -6,6 +6,9 @@ import bilkom.uz.chemical.entity.purchases.Purchase;
 import bilkom.uz.chemical.entity.purchases.PurchaseStatus;
 import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
+import bilkom.uz.chemical.repository.settings.CurrencyRepository;
+import bilkom.uz.chemical.repository.settings.DeliveryTypeRepository;
+import bilkom.uz.chemical.repository.settings.PaymentTypeRepository;
 import bilkom.uz.chemical.repository.suppliers.SupplierRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,9 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
+    private final PaymentTypeRepository paymentTypeRepository;
+    private final DeliveryTypeRepository deliveryTypeRepository;
+    private final CurrencyRepository currencyRepository;
     private final SecurityUtils securityUtils;
 
     public Result getAll() {
@@ -53,8 +59,15 @@ public class PurchaseService {
         purchase.setProduct(productOpt.get());
         purchase.setCountry(dto.getCountry());
         purchase.setBrand(dto.getBrand());
-        purchase.setDeliveryType(dto.getDeliveryType());
-        purchase.setPaymentType(dto.getPaymentType());
+        if (dto.getDeliveryTypeId() != null) {
+            deliveryTypeRepository.findById(dto.getDeliveryTypeId()).ifPresent(purchase::setDeliveryType);
+        }
+        if (dto.getPaymentTypeId() != null) {
+            paymentTypeRepository.findById(dto.getPaymentTypeId()).ifPresent(purchase::setPaymentType);
+        }
+        if (dto.getCurrencyId() != null) {
+            currencyRepository.findById(dto.getCurrencyId()).ifPresent(purchase::setCurrency);
+        }
         purchase.setCertificatePath(dto.getCertificatePath());
         purchase.setPurchaseDescription(dto.getPurchaseDescription());
         purchase.setPrice(dto.getPrice());
@@ -71,14 +84,21 @@ public class PurchaseService {
 
     public Result edit(Long id, PurchaseDto dto) {
         return purchaseRepository.findById(id).map(purchase -> {
-            supplierRepository.findById(dto.getSupplierId())
-                    .ifPresent(purchase::setSupplier);
-            productRepository.findById(dto.getProductId())
-                    .ifPresent(purchase::setProduct);
+            if (dto.getSupplierId() != null)
+                supplierRepository.findById(dto.getSupplierId()).ifPresent(purchase::setSupplier);
+            if (dto.getProductId() != null)
+                productRepository.findById(dto.getProductId()).ifPresent(purchase::setProduct);
             purchase.setCountry(dto.getCountry());
             purchase.setBrand(dto.getBrand());
-            purchase.setDeliveryType(dto.getDeliveryType());
-            purchase.setPaymentType(dto.getPaymentType());
+            if (dto.getDeliveryTypeId() != null) {
+                deliveryTypeRepository.findById(dto.getDeliveryTypeId()).ifPresent(purchase::setDeliveryType);
+            }
+            if (dto.getPaymentTypeId() != null) {
+                paymentTypeRepository.findById(dto.getPaymentTypeId()).ifPresent(purchase::setPaymentType);
+            }
+            if (dto.getCurrencyId() != null) {
+                currencyRepository.findById(dto.getCurrencyId()).ifPresent(purchase::setCurrency);
+            }
             purchase.setCertificatePath(dto.getCertificatePath());
             purchase.setPurchaseDescription(dto.getPurchaseDescription());
             purchase.setPrice(dto.getPrice());

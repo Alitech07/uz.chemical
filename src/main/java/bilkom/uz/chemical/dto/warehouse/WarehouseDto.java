@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class WarehouseDto {
     private Long productId;
     private Long purchaseId;
+    private Long currencyId;
     private Double residual;
     private Double price;
     private String measure;

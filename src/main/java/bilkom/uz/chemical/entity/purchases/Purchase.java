@@ -2,6 +2,9 @@ package bilkom.uz.chemical.entity.purchases;
 
 import bilkom.uz.chemical.entity.User;
 import bilkom.uz.chemical.entity.products.Product;
+import bilkom.uz.chemical.entity.settings.Currency;
+import bilkom.uz.chemical.entity.settings.DeliveryType;
+import bilkom.uz.chemical.entity.settings.PaymentType;
 import bilkom.uz.chemical.entity.suppliers.Supplier;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,11 +41,17 @@ public class Purchase {
     @Column(name = "brand")
     private String brand;
 
-    @Column(name = "delivery_type")
-    private String deliveryType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_type_id")
+    private DeliveryType deliveryType;
 
-    @Column(name = "payment_type")
-    private String paymentType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_type_id")
+    private PaymentType paymentType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
     @Column(name = "certificate_path")
     private String certificatePath;
