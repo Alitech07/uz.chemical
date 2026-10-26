@@ -2,7 +2,10 @@ package bilkom.uz.chemical.service.purchases;
 
 import bilkom.uz.chemical.dto.Result;
 import bilkom.uz.chemical.dto.purchases.PurchaseDto;
+import bilkom.uz.chemical.dto.purchases.PurchaseItemDto;
 import bilkom.uz.chemical.entity.purchases.Purchase;
+import bilkom.uz.chemical.entity.purchases.PurchaseItem;
+import bilkom.uz.chemical.entity.purchases.PurchaseState;
 import bilkom.uz.chemical.entity.purchases.PurchaseStatus;
 import bilkom.uz.chemical.repository.products.ProductRepository;
 import bilkom.uz.chemical.repository.purchases.PurchaseRepository;
@@ -13,10 +16,13 @@ import bilkom.uz.chemical.repository.suppliers.SupplierRepository;
 import bilkom.uz.chemical.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,69 +54,80 @@ public class PurchaseService {
         return new Result("OK", true, purchaseRepository.findAllByStatus(status));
     }
 
+    @Transactional
     public Result add(PurchaseDto dto) {
         var supplierOpt = supplierRepository.findById(dto.getSupplierId());
         if (supplierOpt.isEmpty()) return new Result("Yetkazib beruvchi topilmadi", false);
-        var productOpt = productRepository.findById(dto.getProductId());
-        if (productOpt.isEmpty()) return new Result("Mahsulot topilmadi", false);
 
         Purchase purchase = new Purchase();
         purchase.setSupplier(supplierOpt.get());
-        purchase.setProduct(productOpt.get());
         purchase.setCountry(dto.getCountry());
         purchase.setBrand(dto.getBrand());
-        if (dto.getDeliveryTypeId() != null) {
+        if (dto.getDeliveryTypeId() != null)
             deliveryTypeRepository.findById(dto.getDeliveryTypeId()).ifPresent(purchase::setDeliveryType);
-        }
-        if (dto.getPaymentTypeId() != null) {
+        if (dto.getPaymentTypeId() != null)
             paymentTypeRepository.findById(dto.getPaymentTypeId()).ifPresent(purchase::setPaymentType);
-        }
-        if (dto.getCurrencyId() != null) {
+        if (dto.getCurrencyId() != null)
             currencyRepository.findById(dto.getCurrencyId()).ifPresent(purchase::setCurrency);
-        }
         purchase.setCertificatePath(dto.getCertificatePath());
         purchase.setPurchaseDescription(dto.getPurchaseDescription());
-        purchase.setPrice(dto.getPrice());
-        purchase.setAmount(dto.getAmount());
-        purchase.setCostPrice(dto.getCostPrice());
         purchase.setTransportExpenses(dto.getTransportExpenses());
         purchase.setCustomsExpenses(dto.getCustomsExpenses());
         purchase.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
-        purchase.setState(dto.getState() != null ? dto.getState() : bilkom.uz.chemical.entity.purchases.PurchaseState.ACTIVE);
+        purchase.setState(dto.getState() != null ? dto.getState() : PurchaseState.ACTIVE);
         securityUtils.getCurrentUser().ifPresent(purchase::setCreatedBy);
+
+        List<PurchaseItem> items = buildItems(dto.getItems(), purchase);
+        purchase.setItems(items);
+
         purchaseRepository.save(purchase);
         return new Result("Xarid qo'shildi", true);
     }
 
+    @Transactional
     public Result edit(Long id, PurchaseDto dto) {
         return purchaseRepository.findById(id).map(purchase -> {
             if (dto.getSupplierId() != null)
                 supplierRepository.findById(dto.getSupplierId()).ifPresent(purchase::setSupplier);
-            if (dto.getProductId() != null)
-                productRepository.findById(dto.getProductId()).ifPresent(purchase::setProduct);
             purchase.setCountry(dto.getCountry());
             purchase.setBrand(dto.getBrand());
-            if (dto.getDeliveryTypeId() != null) {
+            if (dto.getDeliveryTypeId() != null)
                 deliveryTypeRepository.findById(dto.getDeliveryTypeId()).ifPresent(purchase::setDeliveryType);
-            }
-            if (dto.getPaymentTypeId() != null) {
+            if (dto.getPaymentTypeId() != null)
                 paymentTypeRepository.findById(dto.getPaymentTypeId()).ifPresent(purchase::setPaymentType);
-            }
-            if (dto.getCurrencyId() != null) {
+            if (dto.getCurrencyId() != null)
                 currencyRepository.findById(dto.getCurrencyId()).ifPresent(purchase::setCurrency);
-            }
             purchase.setCertificatePath(dto.getCertificatePath());
             purchase.setPurchaseDescription(dto.getPurchaseDescription());
-            purchase.setPrice(dto.getPrice());
-            if (dto.getAmount() != null) purchase.setAmount(dto.getAmount());
-            if (dto.getCostPrice() != null) purchase.setCostPrice(dto.getCostPrice());
             if (dto.getTransportExpenses() != null) purchase.setTransportExpenses(dto.getTransportExpenses());
             if (dto.getCustomsExpenses() != null) purchase.setCustomsExpenses(dto.getCustomsExpenses());
             if (dto.getStatus() != null) purchase.setStatus(dto.getStatus());
             if (dto.getState() != null) purchase.setState(dto.getState());
+
+            if (dto.getItems() != null) {
+                purchase.getItems().clear();
+                purchase.getItems().addAll(buildItems(dto.getItems(), purchase));
+            }
+
             purchaseRepository.save(purchase);
             return new Result("Xarid tahrirlandi", true);
         }).orElse(new Result("Xarid topilmadi", false));
+    }
+
+    private List<PurchaseItem> buildItems(List<PurchaseItemDto> dtos, Purchase purchase) {
+        List<PurchaseItem> items = new ArrayList<>();
+        if (dtos == null) return items;
+        for (PurchaseItemDto d : dtos) {
+            var productOpt = productRepository.findById(d.getProductId());
+            if (productOpt.isEmpty()) continue;
+            PurchaseItem item = new PurchaseItem();
+            item.setPurchase(purchase);
+            item.setProduct(productOpt.get());
+            item.setPrice(d.getPrice());
+            item.setAmount(d.getAmount());
+            items.add(item);
+        }
+        return items;
     }
 
     public Result uploadCertificate(MultipartFile file) {

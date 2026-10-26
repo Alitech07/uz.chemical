@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PurchaseDto {
     private Long supplierId;
-    private Long productId;
     private String country;
     private String brand;
     private Long deliveryTypeId;
@@ -21,11 +21,9 @@ public class PurchaseDto {
     private Long currencyId;
     private String certificatePath;
     private String purchaseDescription;
-    private BigDecimal price;
-    private BigDecimal amount;
-    private BigDecimal costPrice;
     private BigDecimal transportExpenses;
     private BigDecimal customsExpenses;
     private PurchaseStatus status;
     private PurchaseState state;
+    private List<PurchaseItemDto> items;
 }

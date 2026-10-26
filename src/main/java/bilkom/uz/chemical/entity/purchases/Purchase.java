@@ -14,6 +14,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "purchases")
@@ -32,8 +34,11 @@ public class Purchase {
     private Supplier supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PurchaseItem> items = new ArrayList<>();
 
     @Column(name = "country")
     private String country;
@@ -59,7 +64,7 @@ public class Purchase {
     @Column(name = "purchase_description")
     private String purchaseDescription;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(precision = 15, scale = 2)
     private BigDecimal price;
 
     @Column(precision = 15, scale = 3)
