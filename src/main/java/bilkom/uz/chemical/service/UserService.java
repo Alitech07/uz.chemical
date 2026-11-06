@@ -9,7 +9,10 @@ import bilkom.uz.chemical.repository.admin.RolesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,6 +65,36 @@ public class UserService {
         }
         userRepository.deleteById(id);
         return new Result("Foydalanuvchi o'chirildi", true);
+    }
+
+    public Result updateProfile(Long id, String fullname, String oldPassword, String newPassword) {
+        return userRepository.findById(id).map(user -> {
+            if (fullname != null && !fullname.isBlank()) user.setFullname(fullname);
+            if (newPassword != null && !newPassword.isBlank()) {
+                if (oldPassword == null || !passwordEncoder.matches(oldPassword, user.getPassword())) {
+                    return new Result("Joriy parol noto'g'ri", false);
+                }
+                user.setPassword(passwordEncoder.encode(newPassword));
+            }
+            userRepository.save(user);
+            return new Result("Profil yangilandi", true);
+        }).orElse(new Result("Foydalanuvchi topilmadi", false));
+    }
+
+    public Result uploadAvatar(Long id, MultipartFile file) {
+        return userRepository.findById(id).map(user -> {
+            try {
+                Path uploadPath = Path.of("uploads/avatars");
+                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+                String fileName = id + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
+                user.setAvatarPath("uploads/avatars/" + fileName);
+                userRepository.save(user);
+                return new Result("Avatar yuklandi", true, user.getAvatarPath());
+            } catch (Exception e) {
+                return new Result("Avatar yuklashda xato: " + e.getMessage(), false, null);
+            }
+        }).orElse(new Result("Foydalanuvchi topilmadi", false));
     }
 
     public Result getAllUsers() {

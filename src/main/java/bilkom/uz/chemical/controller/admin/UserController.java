@@ -5,10 +5,17 @@ import bilkom.uz.chemical.dto.UserDto;
 import bilkom.uz.chemical.security.SecurityUtils;
 import bilkom.uz.chemical.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,6 +70,44 @@ public class UserController {
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
         return ResponseEntity.ok(new Result("OK", true, modules));
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<Result> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        return securityUtils.getCurrentUser()
+                .map(user -> ResponseEntity.ok(userService.uploadAvatar(user.getId(), file)))
+                .orElse(ResponseEntity.status(401).body(new Result("Foydalanuvchi topilmadi", false, null)));
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<Result> updateProfile(@RequestBody Map<String, String> body) {
+        return securityUtils.getCurrentUser()
+                .map(user -> ResponseEntity.ok(userService.updateProfile(
+                        user.getId(),
+                        body.get("fullname"),
+                        body.get("oldPassword"),
+                        body.get("newPassword")
+                )))
+                .orElse(ResponseEntity.status(401).body(new Result("Foydalanuvchi topilmadi", false, null)));
+    }
+
+    @GetMapping("/avatar/{fileName}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable String fileName) {
+        try {
+            Path filePath = Path.of("uploads/avatars").resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (!resource.exists()) return ResponseEntity.notFound().build();
+            String contentType = "image/jpeg";
+            if (fileName.endsWith(".png")) contentType = "image/png";
+            else if (fileName.endsWith(".gif")) contentType = "image/gif";
+            else if (fileName.endsWith(".webp")) contentType = "image/webp";
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/my-permissions")
