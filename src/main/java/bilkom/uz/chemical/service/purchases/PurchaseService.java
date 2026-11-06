@@ -81,7 +81,7 @@ public class PurchaseService {
         purchase.setItems(items);
 
         purchaseRepository.save(purchase);
-        return new Result("Xarid qo'shildi", true);
+        return new Result("Xarid qo'shildi", true, purchase.getId());
     }
 
     @Transactional
