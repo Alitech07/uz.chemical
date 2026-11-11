@@ -86,8 +86,18 @@ public class UserController {
                         user.getId(),
                         body.get("fullname"),
                         body.get("oldPassword"),
-                        body.get("newPassword")
+                        body.get("newPassword"),
+                        body.get("position"),
+                        body.get("phone"),
+                        body.get("address")
                 )))
+                .orElse(ResponseEntity.status(401).body(new Result("Foydalanuvchi topilmadi", false, null)));
+    }
+
+    @GetMapping("/my-stats")
+    public ResponseEntity<Result> getMyStats() {
+        return securityUtils.getCurrentUser()
+                .map(user -> ResponseEntity.ok(userService.getMyStats(user.getId())))
                 .orElse(ResponseEntity.status(401).body(new Result("Foydalanuvchi topilmadi", false, null)));
     }
 

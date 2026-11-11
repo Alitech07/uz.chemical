@@ -11,4 +11,6 @@ import java.util.List;
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findAllBySupplierId(Long supplierId);
     List<Purchase> findAllByStatus(PurchaseStatus status);
+
+    long countByCreatedById(Long userId);
 }
