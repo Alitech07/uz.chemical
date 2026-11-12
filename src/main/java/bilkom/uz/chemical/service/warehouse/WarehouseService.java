@@ -58,6 +58,9 @@ public class WarehouseService {
         securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
 
         if (dto.getPurchaseId() != null) {
+            if (warehouseRepository.existsByPurchaseId(dto.getPurchaseId())) {
+                return new Result("Bu xarid allaqachon omborga qo'shilgan", false);
+            }
             return purchaseRepository.findById(dto.getPurchaseId()).map(purchase -> {
                 warehouse.setPurchase(purchase);
                 warehouseRepository.save(warehouse);
@@ -74,6 +77,26 @@ public class WarehouseService {
         }
 
         return new Result("Mahsulot yoki xarid ko'rsatilmagan", false);
+    }
+
+    public Result addFromPurchase(Long purchaseId) {
+        if (warehouseRepository.existsByPurchaseId(purchaseId)) {
+            return new Result("Bu xarid allaqachon omborga qo'shilgan", false);
+        }
+        return purchaseRepository.findById(purchaseId).map(purchase -> {
+            Warehouse warehouse = new Warehouse();
+            warehouse.setPurchase(purchase);
+            warehouse.setResidual(purchase.getAmount() != null ? purchase.getAmount().doubleValue() : 0.0);
+            warehouse.setPrice(purchase.getPrice());
+            warehouse.setMeasure("kg");
+            warehouse.setState(WarehouseState.ACTIVE);
+            if (purchase.getCurrency() != null) {
+                warehouse.setCurrency(purchase.getCurrency());
+            }
+            securityUtils.getCurrentUser().ifPresent(warehouse::setCreatedBy);
+            warehouseRepository.save(warehouse);
+            return new Result("Xarid omborga qo'shildi", true);
+        }).orElse(new Result("Xarid topilmadi", false));
     }
 
     public Result edit(Long id, WarehouseDto dto) {

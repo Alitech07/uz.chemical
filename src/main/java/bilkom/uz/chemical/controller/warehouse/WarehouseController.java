@@ -50,6 +50,11 @@ public class WarehouseController {
         return ResponseEntity.ok(warehouseService.add(dto));
     }
 
+    @PostMapping("/add-from-purchase/{purchaseId}")
+    public ResponseEntity<Result> addFromPurchase(@PathVariable Long purchaseId) {
+        return ResponseEntity.ok(warehouseService.addFromPurchase(purchaseId));
+    }
+
     @PutMapping("/edit/{id}")
     public ResponseEntity<Result> edit(@PathVariable Long id, @RequestBody WarehouseDto dto) {
         return ResponseEntity.ok(warehouseService.edit(id, dto));
