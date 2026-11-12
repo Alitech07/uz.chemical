@@ -35,6 +35,29 @@ public class DataInitializer implements CommandLineRunner {
             e.printStackTrace();
         }
         initGrid13();
+        migrateCurrencyRates();
+    }
+
+    // ddl-auto=update cannot drop constraints or change column types
+    private void migrateCurrencyRates() {
+        try {
+            jdbcTemplate.queryForList(
+                "SELECT conname FROM pg_constraint " +
+                "WHERE conrelid = to_regclass('currency_rates') AND contype = 'u'", String.class)
+                .forEach(name -> jdbcTemplate.execute(
+                    "ALTER TABLE currency_rates DROP CONSTRAINT \"" + name + "\""));
+
+            Integer dateCols = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.columns " +
+                "WHERE table_name = 'currency_rates' AND column_name = 'rate_date' AND data_type = 'date'",
+                Integer.class);
+            if (dateCols != null && dateCols > 0) {
+                jdbcTemplate.execute(
+                    "ALTER TABLE currency_rates ALTER COLUMN rate_date TYPE timestamp USING rate_date::timestamp");
+            }
+        } catch (Exception e) {
+            System.err.println("=== currency_rates migration ERROR: " + e.getMessage() + " ===");
+        }
     }
 
     private void initGrid13() {

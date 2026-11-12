@@ -1,6 +1,7 @@
 package bilkom.uz.chemical.controller.settings;
 
 import bilkom.uz.chemical.dto.Result;
+import bilkom.uz.chemical.dto.settings.CurrencyRateDto;
 import bilkom.uz.chemical.dto.settings.SettingsItemDto;
 import bilkom.uz.chemical.service.settings.SettingsService;
 import lombok.RequiredArgsConstructor;
@@ -72,5 +73,20 @@ public class SettingsController {
     @DeleteMapping("/currencies/delete/{id}")
     public ResponseEntity<Result> deleteCurrency(@PathVariable Long id) {
         return ResponseEntity.ok(settingsService.deleteCurrency(id));
+    }
+
+    @GetMapping("/currency-rates/list")
+    public ResponseEntity<Result> getCurrencyRates() {
+        return ResponseEntity.ok(settingsService.getAllCurrencyRates());
+    }
+
+    @PostMapping("/currency-rates/add")
+    public ResponseEntity<Result> addCurrencyRate(@RequestBody CurrencyRateDto dto) {
+        return ResponseEntity.ok(settingsService.addCurrencyRate(dto));
+    }
+
+    @DeleteMapping("/currency-rates/delete/{id}")
+    public ResponseEntity<Result> deleteCurrencyRate(@PathVariable Long id) {
+        return ResponseEntity.ok(settingsService.deleteCurrencyRate(id));
     }
 }
