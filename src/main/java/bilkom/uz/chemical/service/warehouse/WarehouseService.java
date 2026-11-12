@@ -59,7 +59,7 @@ public class WarehouseService {
 
         if (dto.getPurchaseId() != null) {
             if (warehouseRepository.existsByPurchaseId(dto.getPurchaseId())) {
-                return new Result("Bu xarid allaqachon omborga qo'shilgan", false);
+                return Result.warn("Bu xarid allaqachon omborga qo'shilgan");
             }
             return purchaseRepository.findById(dto.getPurchaseId()).map(purchase -> {
                 warehouse.setPurchase(purchase);
@@ -81,13 +81,13 @@ public class WarehouseService {
 
     public Result addFromPurchase(Long purchaseId) {
         if (warehouseRepository.existsByPurchaseId(purchaseId)) {
-            return new Result("Bu xarid allaqachon omborga qo'shilgan", false);
+            return Result.warn("Bu xarid allaqachon omborga qo'shilgan");
         }
         return purchaseRepository.findById(purchaseId).map(purchase -> {
             Warehouse warehouse = new Warehouse();
             warehouse.setPurchase(purchase);
             warehouse.setResidual(purchase.getAmount() != null ? purchase.getAmount().doubleValue() : 0.0);
-            warehouse.setPrice(purchase.getPrice());
+            warehouse.setPrice(purchase.getPrice() != null ? purchase.getPrice().doubleValue() : null);
             warehouse.setMeasure("kg");
             warehouse.setState(WarehouseState.ACTIVE);
             if (purchase.getCurrency() != null) {

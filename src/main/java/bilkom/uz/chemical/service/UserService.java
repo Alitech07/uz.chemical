@@ -84,7 +84,7 @@ public class UserService {
             if (address != null) user.setAddress(address);
             if (newPassword != null && !newPassword.isBlank()) {
                 if (oldPassword == null || !passwordEncoder.matches(oldPassword, user.getPassword())) {
-                    return new Result("Joriy parol noto'g'ri", false);
+                    return Result.warn("Joriy parol noto'g'ri");
                 }
                 user.setPassword(passwordEncoder.encode(newPassword));
             }

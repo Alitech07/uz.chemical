@@ -34,7 +34,7 @@ public class RolesService {
 
     public Result add(RolesDto dto) {
         if (rolesRepository.existsByName(dto.getName())) {
-            return new Result("Bu nomdagi rol allaqachon mavjud", false);
+            return Result.warn("Bu nomdagi rol allaqachon mavjud");
         }
         Roles role = new Roles();
         role.setName(dto.getName());

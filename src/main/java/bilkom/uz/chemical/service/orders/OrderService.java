@@ -54,7 +54,7 @@ public class OrderService {
     @Transactional
     public Result add(OrderDto dto) {
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
-            return new Result("Buyurtmada kamida bitta qator bo'lishi kerak", false);
+            return Result.warn("Buyurtmada kamida bitta qator bo'lishi kerak");
         }
         Optional<Client> clientOpt = clientRepository.findById(dto.getClientId());
         if (clientOpt.isEmpty()) {

@@ -5,15 +5,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class Result {
     private String message;
     private boolean success;
     private Object object;
+    private boolean warning;
 
-    public Result(String message,boolean success){
+    public Result(String message, boolean success) {
         this.message = message;
         this.success = success;
+    }
+
+    public Result(String message, boolean success, Object object) {
+        this.message = message;
+        this.success = success;
+        this.object = object;
+    }
+
+    public static Result warn(String message) {
+        Result r = new Result(message, false);
+        r.warning = true;
+        return r;
     }
 }
